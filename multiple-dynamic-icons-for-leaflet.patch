@@ -1,35 +1,39 @@
 diff --git a/leaflet_views/src/Plugin/views/style/LeafletMap.php b/leaflet_views/src/Plugin/views/style/LeafletMap.php
-index 157f674..78154ea 100644
+index 157f674..7acfe8a 100644
 --- a/leaflet_views/src/Plugin/views/style/LeafletMap.php
 +++ b/leaflet_views/src/Plugin/views/style/LeafletMap.php
-@@ -336,9 +336,11 @@ class LeafletMap extends StylePluginBase {
+@@ -336,9 +336,13 @@ class LeafletMap extends StylePluginBase {
      if ($this->options['data_source']) {
        $this->renderFields($this->view->result);
        foreach ($this->view->result as $id => $result) {
+-
++        //grab taxonomy id(tid)
 +        $tax = $result->taxonomy_term_field_data_node__field_amenity_type_tid;
++        //convert tid to taxonomy name
 +        $node_storage = \Drupal::entityManager()->getStorage('taxonomy_term')->load($tax)->getName();
++        //lowercase taxonomy name
 +        $amenity_type = strtolower($node_storage);
- 
          $geofield_value = $this->getFieldValue($id, $geofield_name);
 -
          if (empty($geofield_value)) {
            // In case the result is not among the raw results, get it from the
            // rendered results.
-@@ -372,13 +374,15 @@ class LeafletMap extends StylePluginBase {
+@@ -372,13 +376,16 @@ class LeafletMap extends StylePluginBase {
              }
            }
- 
+
 -          $data = array_merge($data, $points);
 +
- 
+
            if (!empty($this->options['icon']) && $this->options['icon']['iconUrl']) {
              foreach ($data as $key => $feature) {
 -              $data[$key]['icon'] = $this->options['icon'];
 +              //$data[$key]['icon'] = $this->options['icon'];
              }
            }
++        //set icon url path
 +        $data = array_merge($data, $points);
-+        $data[$id]['icon']['iconUrl'] = 'http://valhalla.local/sites/default/files/2016-06/amenity-'. $amenity_type . '.png';
++        $data[$id]['icon']['iconUrl'] = '/sites/default/files/amenity-icons/amenity-'. $amenity_type . '.png';
          }
        }
      }
